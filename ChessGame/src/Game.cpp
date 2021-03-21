@@ -1,6 +1,7 @@
 #include "Game.h"
 
 Game::Game(const char* title, int xpos, int ypos, int width, int height, bool fullScreen)
+	: winHeight(height), winWidth(width)
 {
 	int flags = 0;
 	if (fullScreen) flags = SDL_WINDOW_FULLSCREEN;
@@ -22,10 +23,15 @@ Game::Game(const char* title, int xpos, int ypos, int width, int height, bool fu
 		isRunning = true; 
 	}
 	else isRunning = false;
+}
 
-	// TODO: Init ChessBoard.
-	
-	chessPiece = new ChessPiece("assets/w_rook.png", renderer);  // tmp
+void Game::Init()
+{
+	chessBoard = std::make_unique<ChessBoard>(ChessBoard(winHeight, winWidth, this->renderer));
+	// Init Chess Board
+	chessBoard->Init();
+	// Init Chess Pieces
+	chessPiece = std::make_unique<ChessPiece>("assets/w_queen.png", this->renderer);
 }
 
 Game::~Game()
@@ -62,6 +68,7 @@ void Game::render()
 	SDL_RenderClear(renderer);
 
 	// TODO: Draw Board
+	chessBoard->Draw();
 	
 	chessPiece->Render();
 	

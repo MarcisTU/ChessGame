@@ -6,6 +6,6 @@ bin-int/
 
 # Files
 
-*.vcxproj
-*.filters
+ChessGame.vcxproj
+ChessGame.vcxproj.filters
 *.user

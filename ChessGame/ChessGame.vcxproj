@@ -100,11 +100,13 @@ IF EXIST assets\ (xcopy /Q /E /Y /I assets ..\bin\Release-windows-x86_64\ChessGa
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\ChessBoard.h" />
     <ClInclude Include="src\ChessPiece.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ChessBoard.cpp" />
     <ClCompile Include="src\ChessPiece.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\TextureManager.cpp" />

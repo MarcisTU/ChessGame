@@ -18,11 +18,13 @@
     <ClInclude Include="src\ChessPiece.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\TextureManager.h" />
+    <ClInclude Include="src\ChessBoard.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ChessPiece.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\TextureManager.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\ChessBoard.cpp" />
   </ItemGroup>
 </Project>

@@ -17,19 +17,23 @@ void ChessPiece::Update()
 	srcRect.y = 0;
 
 	// put the source in destination place
-	destRect.x = xpos + 140;
-	destRect.y = ypos;
-	destRect.w = srcRect.w;
-	destRect.h = srcRect.h;
+	destRect.x = xpos + 25;
+	destRect.y = ypos + 11;
+	destRect.w = static_cast<int>(srcRect.w * 0.7);
+	destRect.h = static_cast<int>(srcRect.h * 0.7);
 }
 
-void ChessPiece::Move(int dx, int dy)
+void ChessPiece::Move(const int dx, const int dy)
 {
 	
 }
 
-
 void ChessPiece::Render()
 {
 	SDL_RenderCopy(renderer, objTexture, &srcRect, &destRect);
+}
+
+ChessPiece::~ChessPiece()
+{
+	
 }
