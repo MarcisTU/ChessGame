@@ -1,16 +1,13 @@
 #include "Game.h"
 
-Game::Game(const char* title, int xpos, int ypos, int width, int height, bool fullScreen)
+Game::Game(std::string title, int xpos, int ypos, int width, int height)
 	: winHeight(height), winWidth(width)
 {
-	int flags = 0;
-	if (fullScreen) flags = SDL_WINDOW_FULLSCREEN;
-
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
 	{
 		std::cout << "Subsystems initialized..." << std::endl;
 
-		window = SDL_CreateWindow(title, xpos, ypos, width, height, flags);
+		window = SDL_CreateWindow(title.c_str(), xpos, ypos, width, height, 0);
 		if (window) std::cout << "Window created!" << std::endl;
 
 		renderer = SDL_CreateRenderer(window, -1, 0);
@@ -23,15 +20,16 @@ Game::Game(const char* title, int xpos, int ypos, int width, int height, bool fu
 		isRunning = true; 
 	}
 	else isRunning = false;
+
+	chessBoard = ChessBoard(winHeight, winWidth, renderer);
 }
 
 void Game::Init()
 {
-	chessBoard = std::make_unique<ChessBoard>(ChessBoard(winHeight, winWidth, this->renderer));
 	// Init Chess Board
-	chessBoard->Init();
+	chessBoard.Init();
 	// Init Chess Pieces
-	chessPiece = std::make_unique<ChessPiece>("assets/w_queen.png", this->renderer);
+	chessBoard.InitPieces();
 }
 
 Game::~Game()
@@ -60,17 +58,16 @@ void Game::handleEvents()
 void Game::update()
 {
 	// TODO: Update board
-	chessPiece->Update();
 }
 
 void Game::render()
 {
 	SDL_RenderClear(renderer);
 
-	// TODO: Draw Board
-	chessBoard->Draw();
+	chessBoard.Draw();
 	
-	chessPiece->Render();
+	// Render pieces
+	chessBoard.RenderPieces();
 	
 	SDL_RenderPresent(renderer);
 }
