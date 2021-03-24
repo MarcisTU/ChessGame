@@ -1,6 +1,6 @@
 #include "ChessPiece.h"
 
-ChessPiece::ChessPiece(std::string texture, int newX, int newY, SDL_Renderer* ren)
+ChessPiece::ChessPiece(const std::string& texture, int newX, int newY, SDL_Renderer* ren)
 	: x(newX), y(newY), renderer(ren) {
 	objTexture = TextureManager::LoadTexture(texture.c_str(), ren);
 
@@ -10,6 +10,10 @@ ChessPiece::ChessPiece(std::string texture, int newX, int newY, SDL_Renderer* re
 	srcRect.x = 0;
 	srcRect.y = 0;
 
+	// set initial "home" coordinates for piece
+	resetX = x + 25;
+	resetY = y + 11;
+	
 	// put the source in destination place
 	destRect.x = x + 25;  // add a little offset to x and y to center piece texture
 	destRect.y = y + 11;
@@ -17,8 +21,16 @@ ChessPiece::ChessPiece(std::string texture, int newX, int newY, SDL_Renderer* re
 	destRect.h = static_cast<int>(srcRect.h * 0.7);  // 98
 }
 
-void ChessPiece::Move(const int dx, const int dy)
+void ChessPiece::Move(int dx, int dy)
 {
+	destRect.x += dx;
+	destRect.y += dy;
+}
+
+void ChessPiece::ResetPos()
+{
+	destRect.x = resetX;
+	destRect.y = resetY;
 }
 
 void ChessPiece::Render() const

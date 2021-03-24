@@ -1,6 +1,7 @@
 #pragma once
-#include "SDL2/SDL.h"
+#include <iostream>
 
+#include "SDL2/SDL.h"
 #include "ChessBoard.h"
 
 class Game
@@ -18,9 +19,9 @@ public:
 	bool running() { return isRunning; }
 private:
 	int winHeight, winWidth;
-	bool isRunning;
+	bool isRunning, leftMouseBtnDown;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
-	
+	SDL_Point mousePos, lastMousePos;
 	ChessBoard chessBoard;
 };

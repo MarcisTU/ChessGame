@@ -16,13 +16,17 @@ public:
 	void InitPieces();
 	void Draw() const;
 	void RenderPieces();
+	void UpdateMovedPos();
+	void getClicked(int mouseX, int mouseY);
+	void MovePiece(int deltaX, int deltaY);
 private:
-	void createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string prefix);
+	void createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string_view prefix);
 private:
 	int chessBoardH, chessBoardW;
-	std::vector<std::string> letters;
-	std::vector<std::string> basePieces, pawns;
-	std::vector<ChessPiece> whitePieces, blackPieces;
-	
+	std::vector<std::string_view> letters;
+	std::vector<std::string_view> basePieces, pawns;
+	std::vector<ChessPiece> chessPieces;
+
+	ChessPiece* curChessPiece;
 	SDL_Renderer* renderer;
 };
