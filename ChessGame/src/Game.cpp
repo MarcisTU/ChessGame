@@ -86,6 +86,9 @@ void Game::render()
 	SDL_RenderClear(renderer);
 
 	chessBoard.Draw();
+
+	if (leftMouseBtnDown)  // render chess piece move placeholders if any piece is selected
+		chessBoard.showCurPieceMoves();
 	
 	// Render pieces
 	chessBoard.RenderPieces();

@@ -3,9 +3,7 @@
 ChessBoard::ChessBoard(int winHeight, int winWidth, SDL_Renderer* ren)
 	: chessBoardH(winHeight), chessBoardW(winWidth), renderer(ren)
 {
-	letters = { "a", "b", "c", "d", "e", "f", "g", "h" };
-	basePieces = {"rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook"};
-	pawns = {"pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn"};
+	letters = { "a", "b", "c", "d", "e", "f", "g", "h" }; // will use this later for notation
 	curChessPiece = nullptr;
 }
 
@@ -83,6 +81,254 @@ void ChessBoard::getClicked(int mouseX, int mouseY)
 	}
 }
 
+void ChessBoard::showCurPieceMoves()
+{
+	if (curChessPiece != nullptr)
+		switch(curChessPiece->GetID())
+		{
+		case B_PAWN:
+			generateBlackPawnMoves();
+			break;
+		case W_PAWN:
+			generateWhitePawnMoves();
+			break;
+		case ROOK:
+			generateRookMoves();
+			break;
+		case KNIGHT:
+			generateKnightMoves();
+			break;
+		case BISHOP:
+			generateBishopMoves();
+			break;
+		case KING:
+			generateKingMoves();
+			break;
+		case QUEEN:
+			generateRookMoves();
+			generateBishopMoves();
+			break;
+		default:
+			break;
+		}
+}
+
+void ChessBoard::generateRookMoves()
+{
+	SDL_Rect r;
+	r.h = 60;
+	r.w = 60;
+	int curX = curChessPiece->GetX();
+	int curY = curChessPiece->GetY();
+
+	// Draw moves in left direction
+	for (int x = curX; x > 0; x -= 120)
+	{
+		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		r.x = x - 90;
+		r.y = curY + 30;
+		SDL_RenderFillRect(renderer, &r); 
+	}
+
+	// Draw moves in upwards direction
+	for (int y = curY; y > 0; y -= 120)
+	{
+		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		r.x = curX + 30;
+		r.y = y - 90;
+		SDL_RenderFillRect(renderer, &r);
+	}
+
+	// Draw moves in right direction
+	for (int x = curX; x < 960; x += 120)
+	{
+		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		r.x = x + 150;
+		r.y = curY + 30;
+		SDL_RenderFillRect(renderer, &r);
+	}
+
+	// Draw moves in downwards direction
+	for (int y = curY; y < 960; y += 120)
+	{
+		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		r.x = curX + 30;
+		r.y = y + 150;
+		SDL_RenderFillRect(renderer, &r);
+	}
+}
+
+void ChessBoard::generateKnightMoves()
+{
+	SDL_Rect r;
+	r.h = 60;
+	r.w = 60;
+	int newX, newY;
+	int curX = curChessPiece->GetX();
+	int curY = curChessPiece->GetY();
+	std::vector<std::pair<int, int>> knightMovePos = {
+		{-120, -240},  // top-left
+		{120, -240},   // top-right
+		{240, -120},   // right-top
+		{240, 120},    // right-bottom
+		{-120, 240},   // bottom-left
+		{120, 240},    // bottom-right
+		{-240, -120},  // left-top
+		{-240, 120},   // left-bottom
+	};
+
+	for (auto& knMove : knightMovePos)
+	{
+		newX = curX - knMove.first;
+		newY = curY - knMove.second;
+		
+		if ((newX >= 0 && newX < 960) && (newY >= 0 && newY < 960))
+		{
+			SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+			// place offset so we draw move placeholder in middle of tile
+			r.x = newX + 30;
+			r.y = newY + 30;
+			SDL_RenderFillRect(renderer, &r);	
+		}
+	}
+}
+
+void ChessBoard::generateBishopMoves()
+{
+	SDL_Rect r;
+	r.h = 60;
+	r.w = 60;
+	int curX = curChessPiece->GetX();
+	int curY = curChessPiece->GetY();
+
+	// Draw moves in top-left direction
+	for (int x = curX - 120, y = curY - 120; x >= 0 && y >= 0; x -= 120, y -= 120)
+	{
+		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		r.x = x + 30;
+		r.y = y + 30;
+		SDL_RenderFillRect(renderer, &r);
+	}
+
+	// Draw moves in top-right direction
+	for (int x = curX + 120, y = curY - 120; y >= 0 && x < 960; x += 120, y -= 120)
+	{
+		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		r.x = x + 30;
+		r.y = y + 30;
+		SDL_RenderFillRect(renderer, &r);
+	}
+
+	// Draw moves in bottom-right direction
+	for (int x = curX + 120, y = curY + 120; x < 960 && y < 960; x += 120, y += 120)
+	{
+		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		r.x = x + 30;
+		r.y = y + 30;
+		SDL_RenderFillRect(renderer, &r);
+	}
+
+	// Draw moves in bottom-left direction
+	for (int x = curX - 120, y = curY + 120; x >= 0 && y < 960; x -= 120, y += 120)
+	{
+		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+		r.x = x + 30;
+		r.y = y + 30;
+		SDL_RenderFillRect(renderer, &r);
+	}
+}
+
+void ChessBoard::generateKingMoves()
+{
+	SDL_Rect r;
+	r.h = 60;
+	r.w = 60;
+	int newX, newY;
+	int curX = curChessPiece->GetX();
+	int curY = curChessPiece->GetY();
+	std::vector<std::pair<int, int>> kingMovePos = {
+		{-120, -120},  // top-left
+		{0, -120},     // top
+		{120, -120},   // top-right
+		{120, 0},      // right
+		{120, 120},    // right-bottom
+		{0, 120},      // bottom
+		{-120, 120},   // bottom-left
+		{-120, 0},   // left
+	};
+
+	for (auto& kingMove : kingMovePos)
+	{
+		newX = curX - kingMove.first;
+		newY = curY - kingMove.second;
+
+		if ((newX >= 0 && newX < 960) && (newY >= 0 && newY < 960))
+		{
+			SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+			// place offset so we draw move placeholder in middle of tile
+			r.x = newX + 30;
+			r.y = newY + 30;
+			SDL_RenderFillRect(renderer, &r);
+		}
+	}
+}
+
+void ChessBoard::generateBlackPawnMoves()
+{
+	// TODO check if its first pawn move of the game
+	SDL_Rect r;
+	SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+	r.x = curChessPiece->GetX() + 30;
+	r.y = curChessPiece->GetY() - 90;
+	r.h = 60;
+	r.w = 60;
+	SDL_RenderFillRect(renderer, &r);
+
+	r.x = curChessPiece->GetX() + 30;
+	r.y = curChessPiece->GetY() - 210;
+	SDL_RenderFillRect(renderer, &r);
+}
+
+void ChessBoard::generateWhitePawnMoves()
+{
+	// TODO check if its first pawn move of the game
+	SDL_Rect r;
+	SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+	r.x = curChessPiece->GetX() + 30;
+	r.y = curChessPiece->GetY() + 150;
+	r.h = 60;
+	r.w = 60;
+	SDL_RenderFillRect(renderer, &r);
+
+	r.x = curChessPiece->GetX() + 30;
+	r.y = curChessPiece->GetY() + 270;
+	SDL_RenderFillRect(renderer, &r);
+}
+
 void ChessBoard::MovePiece(int deltaX, int deltaY)
 {
 	if (curChessPiece != nullptr)
@@ -93,6 +339,7 @@ void ChessBoard::UpdateMovedPos()
 {
 	if (curChessPiece != nullptr)
 	{
+		// TODO check if taking piece or doing nothing
 		curChessPiece->ResetPos();
 		curChessPiece = nullptr;
 	}
@@ -103,8 +350,25 @@ void ChessBoard::Init() const
 	Draw();
 }
 
+void ChessBoard::InitPieces()
+{
+	createPieces(chessPieces, 0, 0, "assets/w_");
+	createPieces(chessPieces, 0, chessBoardH - 120, "assets/b_");
+}
+
+int ChessBoard::findPieceId(std::string_view& name)
+{
+	if (name == "rook") return ROOK;
+	if (name == "knight") return KNIGHT;
+	if (name == "bishop") return BISHOP;
+	if (name == "king") return KING;
+	if (name == "queen") return QUEEN;
+}
+
 void ChessBoard::createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string_view prefix)
 {
+	std::vector<std::string_view> basePieces = { "rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook" };
+	std::vector<std::string_view> pawns = { "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn" };
 	int x = startX, y = startY;
 	std::string path;
 	std::string_view imageType = ".png";
@@ -112,30 +376,31 @@ void ChessBoard::createPieces(std::vector<ChessPiece>& pieces, int startX, int s
 	for (auto& it : basePieces)
 	{
 		path.append(prefix).append(it).append(imageType);
-		pieces.emplace_back(ChessPiece(path, x, y, renderer));  // Use emplace_back to not create temporary copy of constructing object
+		pieces.emplace_back(ChessPiece(path, x, y, renderer, findPieceId(it)));  // Use emplace_back to not create temporary copy of constructing object
 
 		x += 120;  // move to next tile
 		path.clear();  // clear the path for next iteration
 	}
 
 	x = 0;
-	if (prefix.find("/w_") != std::string_view::npos) y += 120;  // check if drawing white pieces or black
-	else y -= 120;
+	int pieceId;
+	if (prefix.find("/w_") != std::string_view::npos) {
+		y += 120;
+		pieceId = W_PAWN;
+	}  // check if drawing white pieces or black
+	else {
+		pieceId = B_PAWN;
+		y -= 120;
+	}
 	
 	for (auto& it : pawns)
 	{
 		path.append(prefix).append(it).append(imageType);
-		pieces.emplace_back(ChessPiece(path, x, y, renderer));
+		pieces.emplace_back(ChessPiece(path, x, y, renderer, pieceId));
 
 		x += 120;
 		path.clear();
 	}
-}
-
-void ChessBoard::InitPieces()
-{
-	createPieces(chessPieces, 0, 0, "assets/w_");
-	createPieces(chessPieces, 0, chessBoardH - 120, "assets/b_");
 }
 
 ChessBoard::~ChessBoard()

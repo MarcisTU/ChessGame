@@ -10,18 +10,19 @@ class ChessPiece
 {
 public:
 	ChessPiece() = default;
-	ChessPiece(const std::string& texture, int newX, int newY, SDL_Renderer* renderer);
+	ChessPiece(const std::string& texture, int newX, int newY, SDL_Renderer* renderer, int pieceId);
 	~ChessPiece();
 
 	void Render() const;
 	void Move(int dx, int dy);
 	int GetX() const { return x; }
 	int GetY() const { return y; }
+	int GetID() const { return id; }
 	int GetDestX() const { return destRect.x; }
 	int GetDestY() const { return destRect.y; }
 	void ResetPos();
 private:
-	int resetX, resetY, x, y;
+	int resetX, resetY, x, y, id;
 
 	SDL_Texture* objTexture;
 	SDL_Rect srcRect, destRect;

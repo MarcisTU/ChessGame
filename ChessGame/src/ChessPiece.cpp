@@ -1,7 +1,7 @@
 #include "ChessPiece.h"
 
-ChessPiece::ChessPiece(const std::string& texture, int newX, int newY, SDL_Renderer* ren)
-	: x(newX), y(newY), renderer(ren) {
+ChessPiece::ChessPiece(const std::string& texture, int newX, int newY, SDL_Renderer* ren, int pieceId)
+	: x(newX), y(newY), renderer(ren), id(pieceId) {
 	objTexture = TextureManager::LoadTexture(texture.c_str(), ren);
 
 	// choose what portion of source image to take
