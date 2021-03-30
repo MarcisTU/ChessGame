@@ -47,7 +47,3 @@ void ChessPiece::Render() const
 {
 	SDL_RenderCopy(renderer, objTexture, &srcRect, &destRect);
 }
-
-ChessPiece::~ChessPiece()
-{
-}

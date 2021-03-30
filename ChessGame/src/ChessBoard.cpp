@@ -1,15 +1,14 @@
 #include "ChessBoard.h"
 
 ChessBoard::ChessBoard(int winHeight, int winWidth, SDL_Renderer* ren)
-	: chessBoardH(winHeight), chessBoardW(winWidth), renderer(ren)
-{
-	letters = { "a", "b", "c", "d", "e", "f", "g", "h" }; // will use this later for notation
-	curChessPiece = nullptr;
-}
+	: chessBoardH(winHeight), chessBoardW(winWidth), renderer(ren), curChessPiece(nullptr)
+{}
 
 void ChessBoard::Draw() const
 {
 	SDL_Rect chessTile;
+	chessTile.w = 120;
+	chessTile.h = 120;
 	
 	for (int row = 0; row < chessBoardH; row+=120)
 	{
@@ -17,8 +16,6 @@ void ChessBoard::Draw() const
 		{
 			chessTile.x = col;
 			chessTile.y = row;
-			chessTile.w = 120;
-			chessTile.h = 120;
 
 			const int curColNum = col / 120;
 			const int curRowNum = row / 120;
@@ -28,14 +25,12 @@ void ChessBoard::Draw() const
 			{
 				// Set render color to White
 				SDL_SetRenderDrawColor(renderer, 230, 230, 230, 255);
-
 				// Render rect
 				SDL_RenderFillRect(renderer, &chessTile);
 			} else
 			{
 				// Set render color to Black
 				SDL_SetRenderDrawColor(renderer, 31, 48, 74, 255);
-
 				// Render rect
 				SDL_RenderFillRect(renderer, &chessTile);
 			}
@@ -431,42 +426,35 @@ int ChessBoard::findPieceId(std::string_view& name)
 
 void ChessBoard::createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string_view prefix)
 {
-	std::vector<std::string_view> basePieces = { "rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook" };
-	std::vector<std::string_view> pawns = { "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn" };
-	int x = startX, y = startY;
+	std::string_view basePieces[8] = { "rook", "knight", "bishop", "king", "queen", "bishop", "knight", "rook" };
+	std::string_view pawns[8] = { "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn", "pawn" };
 	std::string path;
 	std::string_view imageType = ".png";
 	
 	for (auto& it : basePieces)
 	{
 		path.append(prefix).append(it).append(imageType);
-		pieces.emplace_back(ChessPiece(path, x, y, renderer, findPieceId(it)));  // Use emplace_back to not create temporary copy of constructing object
-
-		x += 120;  // move to next tile
+		pieces.emplace_back(ChessPiece(path, startX, startY, renderer, findPieceId(it)));  // Use emplace_back to not create temporary copy of constructing object
+		startX += 120;  // move to next tile
 		path.clear();  // clear the path for next iteration
 	}
 
-	x = 0;
+	startX = 0;
 	int pieceId;
 	if (prefix.find("/w_") != std::string_view::npos) {
-		y += 120;
+		startY += 120;
 		pieceId = W_PAWN;
 	}  // check if drawing white pieces or black
 	else {
 		pieceId = B_PAWN;
-		y -= 120;
+		startY -= 120;
 	}
 	
 	for (auto& it : pawns)
 	{
 		path.append(prefix).append(it).append(imageType);
-		pieces.emplace_back(ChessPiece(path, x, y, renderer, pieceId));
-
-		x += 120;
+		pieces.emplace_back(ChessPiece(path, startX, startY, renderer, pieceId));
+		startX += 120;
 		path.clear();
 	}
-}
-
-ChessBoard::~ChessBoard()
-{
 }

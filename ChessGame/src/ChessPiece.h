@@ -11,7 +11,6 @@ class ChessPiece
 public:
 	ChessPiece() = default;
 	ChessPiece(const std::string& texture, int newX, int newY, SDL_Renderer* renderer, int pieceId);
-	~ChessPiece();
 
 	void Render() const;
 	void Move(int dx, int dy);

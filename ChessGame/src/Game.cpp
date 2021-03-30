@@ -10,7 +10,7 @@ Game::Game(std::string title, int xpos, int ypos, int width, int height)
 		window = SDL_CreateWindow(title.c_str(), xpos, ypos, width, height, 0);
 		if (window) std::cout << "Window created!" << std::endl;
 
-		this->renderer = SDL_CreateRenderer(window, -1, 0);
+		renderer = SDL_CreateRenderer(window, -1, 0);
 		if (renderer)
 		{
 			SDL_SetRenderDrawColor(renderer, 125, 200, 255, 255);
@@ -26,9 +26,7 @@ Game::Game(std::string title, int xpos, int ypos, int width, int height)
 
 void Game::Init()
 {
-	// Init Chess Board
 	chessBoard.Init();
-	// Init Chess Pieces
 	chessBoard.InitPieces();
 }
 
@@ -37,7 +35,6 @@ Game::~Game()
 	SDL_DestroyWindow(window);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
-	std::cout << "Game Cleared!" << std::endl;
 }
 
 void Game::handleEvents()
@@ -51,7 +48,6 @@ void Game::handleEvents()
 		break;
 	case SDL_MOUSEMOTION:
 		mousePos = { event.motion.x, event.motion.y };
-		std::cout << "Mouse x: " << mousePos.x << " Mouse y: " << mousePos.y << std::endl;
 		break;
 	case SDL_MOUSEBUTTONUP:
 		if (event.button.button == SDL_BUTTON_LEFT)

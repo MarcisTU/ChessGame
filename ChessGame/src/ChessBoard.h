@@ -10,7 +10,6 @@ class ChessBoard
 public:
 	ChessBoard() = default;
 	ChessBoard(int winHeight, int winWidth, SDL_Renderer* ren);
-	~ChessBoard();
 	
 	void Init() const;
 	void InitPieces();
@@ -23,7 +22,7 @@ public:
 private:
 	void createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string_view prefix);
 	int findPieceId(std::string_view& name);
-	// TODO Free move generation functions
+	
 	void generateBlackPawnMoves();
 	void generateWhitePawnMoves();
 	void generateRookMoves();
@@ -35,7 +34,7 @@ private:
 private:
 	enum chessPieceID { ROOK, KNIGHT, BISHOP, KING, QUEEN, W_PAWN, B_PAWN };
 	int chessBoardH, chessBoardW;
-	std::vector<std::string_view> letters;
+	std::string_view letters[8] = { "a", "b", "c", "d", "e", "f", "g", "h" };
 	std::vector<ChessPiece> chessPieces;
 	std::vector<std::pair<int, int>> freeMoves;
 
