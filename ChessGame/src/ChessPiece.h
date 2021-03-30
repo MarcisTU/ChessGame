@@ -21,7 +21,8 @@ public:
 	int GetDestX() const { return destRect.x; }
 	int GetDestY() const { return destRect.y; }
 	void ResetPos();
-private:
+	void setPos(int newX, int newY);
+	private:
 	int resetX, resetY, x, y, id;
 
 	SDL_Texture* objTexture;

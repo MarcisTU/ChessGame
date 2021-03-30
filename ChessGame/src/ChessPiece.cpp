@@ -33,6 +33,16 @@ void ChessPiece::ResetPos()
 	destRect.y = resetY;
 }
 
+void ChessPiece::setPos(const int newX, const int newY)
+{
+	x = newX;
+	y = newY;
+	resetX = x + 25;
+	resetY = y + 11;
+	destRect.x = x + 25;
+	destRect.y = y + 11;
+}
+
 void ChessPiece::Render() const
 {
 	SDL_RenderCopy(renderer, objTexture, &srcRect, &destRect);

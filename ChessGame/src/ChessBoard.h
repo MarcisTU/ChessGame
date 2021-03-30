@@ -16,7 +16,7 @@ public:
 	void InitPieces();
 	void Draw() const;
 	void RenderPieces();
-	void UpdateMovedPos();
+	void UpdateMovedPos(int mouseX, int mouseY);
 	void getClicked(int mouseX, int mouseY);
 	void MovePiece(int deltaX, int deltaY);
 	void showCurPieceMoves();
@@ -30,11 +30,14 @@ private:
 	void generateKnightMoves();
 	void generateBishopMoves();
 	void generateKingMoves();
+	void generateQueenMoves();
+	bool checkIfSquareHasPiece(int curX, int curY);
 private:
 	enum chessPieceID { ROOK, KNIGHT, BISHOP, KING, QUEEN, W_PAWN, B_PAWN };
 	int chessBoardH, chessBoardW;
 	std::vector<std::string_view> letters;
 	std::vector<ChessPiece> chessPieces;
+	std::vector<std::pair<int, int>> freeMoves;
 
 	ChessPiece* curChessPiece;
 	SDL_Renderer* renderer;

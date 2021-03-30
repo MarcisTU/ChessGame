@@ -105,12 +105,27 @@ void ChessBoard::showCurPieceMoves()
 			generateKingMoves();
 			break;
 		case QUEEN:
-			generateRookMoves();
-			generateBishopMoves();
+			generateQueenMoves();
 			break;
 		default:
 			break;
 		}
+}
+
+bool ChessBoard::checkIfSquareHasPiece(const int curX, const int curY)
+{
+	for (auto& piece : chessPieces)
+		if (piece.GetX() == curX && piece.GetY() == curY) return true;
+	return false;
+}
+
+void ChessBoard::generateQueenMoves()
+{
+	// Generate vertical and horizontal moves
+	generateRookMoves();
+
+	// Diagonal moves
+	generateBishopMoves();
 }
 
 void ChessBoard::generateRookMoves()
@@ -120,49 +135,58 @@ void ChessBoard::generateRookMoves()
 	r.w = 60;
 	int curX = curChessPiece->GetX();
 	int curY = curChessPiece->GetY();
-
+	freeMoves.clear();  // clear free moves because they might be for last chess piece
+	
 	// Draw moves in left direction
-	for (int x = curX; x > 0; x -= 120)
+	for (int x = curX - 120; x >= 0; x -= 120)
 	{
+		if (checkIfSquareHasPiece(x, curY)) break;  // stop showing moves when reach first piece in the way
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-		r.x = x - 90;
+		r.x = x + 30;
 		r.y = curY + 30;
-		SDL_RenderFillRect(renderer, &r); 
+		SDL_RenderFillRect(renderer, &r);
+		freeMoves.push_back({x, curY});
 	}
 
 	// Draw moves in upwards direction
-	for (int y = curY; y > 0; y -= 120)
+	for (int y = curY - 120; y >= 0; y -= 120)
 	{
+		if (checkIfSquareHasPiece(curX, y)) break;  // stop showing moves when reach first piece in the way
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 		r.x = curX + 30;
-		r.y = y - 90;
+		r.y = y + 30;
 		SDL_RenderFillRect(renderer, &r);
+		freeMoves.push_back({ curX, y });
 	}
 
 	// Draw moves in right direction
-	for (int x = curX; x < 960; x += 120)
+	for (int x = curX + 120; x < 960; x += 120)
 	{
+		if (checkIfSquareHasPiece(x, curY)) break;  // stop showing moves when reach first piece in the way
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
-		r.x = x + 150;
+		r.x = x + 30;
 		r.y = curY + 30;
 		SDL_RenderFillRect(renderer, &r);
+		freeMoves.push_back({ x, curY });
 	}
 
 	// Draw moves in downwards direction
-	for (int y = curY; y < 960; y += 120)
+	for (int y = curY + 120; y < 960; y += 120)
 	{
+		if (checkIfSquareHasPiece(curX, y)) break;  // stop showing moves when reach first piece in the way
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 		r.x = curX + 30;
-		r.y = y + 150;
+		r.y = y + 30;
 		SDL_RenderFillRect(renderer, &r);
+		freeMoves.push_back({ curX, y });
 	}
 }
 
@@ -174,6 +198,8 @@ void ChessBoard::generateKnightMoves()
 	int newX, newY;
 	int curX = curChessPiece->GetX();
 	int curY = curChessPiece->GetY();
+	freeMoves.clear();  // clear free moves because they might be for last chess piece
+	
 	std::vector<std::pair<int, int>> knightMovePos = {
 		{-120, -240},  // top-left
 		{120, -240},   // top-right
@@ -192,13 +218,16 @@ void ChessBoard::generateKnightMoves()
 		
 		if ((newX >= 0 && newX < 960) && (newY >= 0 && newY < 960))
 		{
+			if (checkIfSquareHasPiece(newX, newY))  // if square is taken by another piece then don't show free move there
+				continue;
 			SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 			// place offset so we draw move placeholder in middle of tile
 			r.x = newX + 30;
 			r.y = newY + 30;
-			SDL_RenderFillRect(renderer, &r);	
+			SDL_RenderFillRect(renderer, &r);
+			freeMoves.push_back({ newX, newY });
 		}
 	}
 }
@@ -210,49 +239,58 @@ void ChessBoard::generateBishopMoves()
 	r.w = 60;
 	int curX = curChessPiece->GetX();
 	int curY = curChessPiece->GetY();
+	if (curChessPiece->GetID() != QUEEN) freeMoves.clear();  // clear free moves because they might be for last chess piece
 
 	// Draw moves in top-left direction
 	for (int x = curX - 120, y = curY - 120; x >= 0 && y >= 0; x -= 120, y -= 120)
 	{
+		if (checkIfSquareHasPiece(x, y)) break;  // stop showing moves when reach first piece in the way
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 		r.x = x + 30;
 		r.y = y + 30;
 		SDL_RenderFillRect(renderer, &r);
+		freeMoves.push_back({ x, y });
 	}
 
 	// Draw moves in top-right direction
 	for (int x = curX + 120, y = curY - 120; y >= 0 && x < 960; x += 120, y -= 120)
 	{
+		if (checkIfSquareHasPiece(x, y)) break;  // stop showing moves when reach first piece in the way
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 		r.x = x + 30;
 		r.y = y + 30;
 		SDL_RenderFillRect(renderer, &r);
+		freeMoves.push_back({ x, y });
 	}
 
 	// Draw moves in bottom-right direction
 	for (int x = curX + 120, y = curY + 120; x < 960 && y < 960; x += 120, y += 120)
 	{
+		if (checkIfSquareHasPiece(x, y)) break;  // stop showing moves when reach first piece in the way
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 		r.x = x + 30;
 		r.y = y + 30;
 		SDL_RenderFillRect(renderer, &r);
+		freeMoves.push_back({ x, y });
 	}
 
 	// Draw moves in bottom-left direction
 	for (int x = curX - 120, y = curY + 120; x >= 0 && y < 960; x -= 120, y += 120)
 	{
+		if (checkIfSquareHasPiece(x, y)) break;  // stop showing moves when reach first piece in the way
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
 		r.x = x + 30;
 		r.y = y + 30;
 		SDL_RenderFillRect(renderer, &r);
+		freeMoves.push_back({ x, y });
 	}
 }
 
@@ -264,6 +302,7 @@ void ChessBoard::generateKingMoves()
 	int newX, newY;
 	int curX = curChessPiece->GetX();
 	int curY = curChessPiece->GetY();
+	freeMoves.clear();  // clear free moves because they might be for last chess piece
 	std::vector<std::pair<int, int>> kingMovePos = {
 		{-120, -120},  // top-left
 		{0, -120},     // top
@@ -282,6 +321,7 @@ void ChessBoard::generateKingMoves()
 
 		if ((newX >= 0 && newX < 960) && (newY >= 0 && newY < 960))
 		{
+			if (checkIfSquareHasPiece(newX, newY)) continue;
 			SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -289,6 +329,7 @@ void ChessBoard::generateKingMoves()
 			r.x = newX + 30;
 			r.y = newY + 30;
 			SDL_RenderFillRect(renderer, &r);
+			freeMoves.push_back({ newX, newY });
 		}
 	}
 }
@@ -297,36 +338,50 @@ void ChessBoard::generateBlackPawnMoves()
 {
 	// TODO check if its first pawn move of the game
 	SDL_Rect r;
-	SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
-	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
-	r.x = curChessPiece->GetX() + 30;
-	r.y = curChessPiece->GetY() - 90;
 	r.h = 60;
 	r.w = 60;
+	SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	freeMoves.clear();  // clear free moves because they might be for last chess piece
+	
+	if (checkIfSquareHasPiece(curChessPiece->GetX(), curChessPiece->GetY() - 120)) return; // if there is piece on next square return without free moves
+	
+	r.x = curChessPiece->GetX() + 30;
+	r.y = curChessPiece->GetY() - 90;
 	SDL_RenderFillRect(renderer, &r);
+	freeMoves.push_back({ curChessPiece->GetX(), curChessPiece->GetY() - 120 });
+	
+	if (checkIfSquareHasPiece(curChessPiece->GetX(), curChessPiece->GetY() - 240)) return; // if there is piece on next square return without free moves
 
 	r.x = curChessPiece->GetX() + 30;
 	r.y = curChessPiece->GetY() - 210;
 	SDL_RenderFillRect(renderer, &r);
+	freeMoves.push_back({ curChessPiece->GetX(), curChessPiece->GetY() - 240 });
 }
 
 void ChessBoard::generateWhitePawnMoves()
 {
 	// TODO check if its first pawn move of the game
 	SDL_Rect r;
+	r.h = 60;
+	r.w = 60;
 	SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+	freeMoves.clear();  // clear free moves because they might be for last chess piece
+	
+	if (checkIfSquareHasPiece(curChessPiece->GetX(), curChessPiece->GetY() + 120)) return; // if there is piece on next square return without free moves
 
 	r.x = curChessPiece->GetX() + 30;
 	r.y = curChessPiece->GetY() + 150;
-	r.h = 60;
-	r.w = 60;
 	SDL_RenderFillRect(renderer, &r);
+	freeMoves.push_back({ curChessPiece->GetX(), curChessPiece->GetY() + 120 });
+
+	if (checkIfSquareHasPiece(curChessPiece->GetX(), curChessPiece->GetY() + 240)) return; // if there is piece on next square return without free moves
 
 	r.x = curChessPiece->GetX() + 30;
 	r.y = curChessPiece->GetY() + 270;
 	SDL_RenderFillRect(renderer, &r);
+	freeMoves.push_back({ curChessPiece->GetX(), curChessPiece->GetY() + 240 });
 }
 
 void ChessBoard::MovePiece(int deltaX, int deltaY)
@@ -335,11 +390,20 @@ void ChessBoard::MovePiece(int deltaX, int deltaY)
 		curChessPiece->Move(deltaX, deltaY);
 }
 
-void ChessBoard::UpdateMovedPos()
+void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY)
 {
 	if (curChessPiece != nullptr)
 	{
-		// TODO check if taking piece or doing nothing
+		for (auto& target : freeMoves)
+		{
+			if ((mouseX >= target.first && mouseX < (target.first + 120)) 
+				&& (mouseY >= target.second && mouseY < (target.second + 120)))
+			{
+				curChessPiece->setPos(target.first, target.second);
+				curChessPiece = nullptr;
+				return;
+			}
+		}
 		curChessPiece->ResetPos();
 		curChessPiece = nullptr;
 	}

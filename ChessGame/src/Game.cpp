@@ -57,7 +57,7 @@ void Game::handleEvents()
 		if (event.button.button == SDL_BUTTON_LEFT)
 		{
 			leftMouseBtnDown = false;
-			chessBoard.UpdateMovedPos();
+			chessBoard.UpdateMovedPos(mousePos.x, mousePos.y);
 		}
 		break;
 	case SDL_MOUSEBUTTONDOWN:
@@ -76,6 +76,7 @@ void Game::update()
 {
 	if (leftMouseBtnDown)
 	{
+		// Create draggable object effect while mouse btn is down on chess piece
 		chessBoard.MovePiece((mousePos.x - lastMousePos.x), (mousePos.y - lastMousePos.y));
 	}
 	lastMousePos = mousePos;
@@ -90,7 +91,6 @@ void Game::render()
 	if (leftMouseBtnDown)  // render chess piece move placeholders if any piece is selected
 		chessBoard.showCurPieceMoves();
 	
-	// Render pieces
 	chessBoard.RenderPieces();
 	
 	SDL_RenderPresent(renderer);
