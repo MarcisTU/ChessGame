@@ -37,6 +37,7 @@ private:
 	std::string_view letters[8] = { "a", "b", "c", "d", "e", "f", "g", "h" };
 	std::vector<ChessPiece> chessPieces;
 	std::vector<std::pair<int, int>> freeMoves;
+	std::vector<std::pair<int, int>> captureMoves;
 
 	ChessPiece* curChessPiece;
 	SDL_Renderer* renderer;

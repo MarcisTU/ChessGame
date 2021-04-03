@@ -331,7 +331,6 @@ void ChessBoard::generateKingMoves()
 
 void ChessBoard::generateBlackPawnMoves()
 {
-	// TODO check if its first pawn move of the game
 	SDL_Rect r;
 	r.h = 60;
 	r.w = 60;
@@ -346,7 +345,8 @@ void ChessBoard::generateBlackPawnMoves()
 	SDL_RenderFillRect(renderer, &r);
 	freeMoves.push_back({ curChessPiece->GetX(), curChessPiece->GetY() - 120 });
 	
-	if (checkIfSquareHasPiece(curChessPiece->GetX(), curChessPiece->GetY() - 240)) return; // if there is piece on next square return without free moves
+	if (checkIfSquareHasPiece(curChessPiece->GetX(), curChessPiece->GetY() - 240) || !curChessPiece->firstmove())
+		return; // if there is piece on next square return without free moves
 
 	r.x = curChessPiece->GetX() + 30;
 	r.y = curChessPiece->GetY() - 210;
@@ -356,7 +356,6 @@ void ChessBoard::generateBlackPawnMoves()
 
 void ChessBoard::generateWhitePawnMoves()
 {
-	// TODO check if its first pawn move of the game
 	SDL_Rect r;
 	r.h = 60;
 	r.w = 60;
@@ -371,7 +370,7 @@ void ChessBoard::generateWhitePawnMoves()
 	SDL_RenderFillRect(renderer, &r);
 	freeMoves.push_back({ curChessPiece->GetX(), curChessPiece->GetY() + 120 });
 
-	if (checkIfSquareHasPiece(curChessPiece->GetX(), curChessPiece->GetY() + 240)) return; // if there is piece on next square return without free moves
+	if (checkIfSquareHasPiece(curChessPiece->GetX(), curChessPiece->GetY() + 240) || !curChessPiece->firstmove()) return; // if there is piece on next square return without free moves
 
 	r.x = curChessPiece->GetX() + 30;
 	r.y = curChessPiece->GetY() + 270;
@@ -395,6 +394,8 @@ void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY)
 				&& (mouseY >= target.second && mouseY < (target.second + 120)))
 			{
 				curChessPiece->setPos(target.first, target.second);
+				// Mark chess piece as moved
+				curChessPiece->setFirstMove(false);
 				curChessPiece = nullptr;
 				return;
 			}
