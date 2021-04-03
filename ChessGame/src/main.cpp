@@ -3,7 +3,6 @@
 
 // MAJOR TODOS LATER ON
 // 1. Instead of "for loops" use algorithms library if possible
-// 2. Factor out generate moves logic to seperate class ?Moves?
 
 int main(int argc, char* argv[])
 {

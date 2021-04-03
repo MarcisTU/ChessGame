@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "ChessPiece.h"
+#include "GameLogic.h"
 #include "SDL2/SDL.h"
 
 class ChessBoard
@@ -22,23 +23,16 @@ public:
 private:
 	void createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string_view prefix);
 	int findPieceId(std::string_view& name);
-	
-	void generateBlackPawnMoves();
-	void generateWhitePawnMoves();
-	void generateRookMoves();
-	void generateKnightMoves();
-	void generateBishopMoves();
-	void generateKingMoves();
-	void generateQueenMoves();
-	bool checkIfSquareHasPiece(int curX, int curY);
 private:
-	enum chessPieceID { ROOK, KNIGHT, BISHOP, KING, QUEEN, W_PAWN, B_PAWN };
-	int chessBoardH, chessBoardW;
+	enum chessPieceColor { WHITE, BLACK };
+	enum chessPieceID { ROOK, KNIGHT, BISHOP, KING, QUEEN, PAWN };
+	int chessBoardH = 0, chessBoardW = 0;
 	std::string_view letters[8] = { "a", "b", "c", "d", "e", "f", "g", "h" };
 	std::vector<ChessPiece> chessPieces;
 	std::vector<std::pair<int, int>> freeMoves;
 	std::vector<std::pair<int, int>> captureMoves;
 
 	ChessPiece* curChessPiece;
+	GameLogic engine;
 	SDL_Renderer* renderer;
 };

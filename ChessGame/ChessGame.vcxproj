@@ -87,6 +87,7 @@ IF EXIST assets\ (xcopy /Q /E /Y /I assets ..\bin\Debug-windows-x86_64\ChessGame
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -102,12 +103,14 @@ IF EXIST assets\ (xcopy /Q /E /Y /I assets ..\bin\Release-windows-x86_64\ChessGa
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\GameLogic.h" />
     <ClInclude Include="src\ChessBoard.h" />
     <ClInclude Include="src\ChessPiece.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\GameLogic.cpp" />
     <ClCompile Include="src\ChessBoard.cpp" />
     <ClCompile Include="src\ChessPiece.cpp" />
     <ClCompile Include="src\Game.cpp" />
