@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "ChessPiece.h"
 
 ChessPiece::ChessPiece(const std::string& texture, int newX, int newY, SDL_Renderer* ren, int pieceId, int pieceColor)

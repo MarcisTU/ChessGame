@@ -1,4 +1,4 @@
-#include <iostream>
+#include "pch.h"
 #include "Game.h"
 
 // MAJOR TODOS LATER ON
@@ -10,7 +10,6 @@ int main(int argc, char* argv[])
 
 	if (!game.running())
 	{
-		std::cout << "Game was not created successfully." << std::endl;
 		return -1;
 	}
 	

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "GameLogic.h"
 
 GameLogic::GameLogic(SDL_Renderer* rend)

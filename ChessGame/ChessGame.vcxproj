@@ -56,13 +56,14 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>dependencies\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -78,7 +79,7 @@ IF EXIST assets\ (xcopy /Q /E /Y /I assets ..\bin\Debug-windows-x86_64\ChessGame
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>dependencies\SDL2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -88,6 +89,7 @@ IF EXIST assets\ (xcopy /Q /E /Y /I assets ..\bin\Debug-windows-x86_64\ChessGame
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -107,6 +109,7 @@ IF EXIST assets\ (xcopy /Q /E /Y /I assets ..\bin\Release-windows-x86_64\ChessGa
     <ClInclude Include="src\ChessBoard.h" />
     <ClInclude Include="src\ChessPiece.h" />
     <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +117,12 @@ IF EXIST assets\ (xcopy /Q /E /Y /I assets ..\bin\Release-windows-x86_64\ChessGa
     <ClCompile Include="src\ChessBoard.cpp" />
     <ClCompile Include="src\ChessPiece.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="src\TextureManager.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>

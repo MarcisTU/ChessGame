@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "ChessBoard.h"
 
 ChessBoard::ChessBoard(int winHeight, int winWidth, SDL_Renderer* ren)
@@ -8,6 +9,7 @@ ChessBoard::ChessBoard(int winHeight, int winWidth, SDL_Renderer* ren)
 
 void ChessBoard::Draw() const
 {
+	// TODO draw square names on board or on sides. ex. A1, A2, A3...
 	SDL_Rect chessTile;
 	chessTile.w = 120;
 	chessTile.h = 120;
@@ -27,13 +29,11 @@ void ChessBoard::Draw() const
 			{
 				// Set render color to White
 				SDL_SetRenderDrawColor(renderer, 230, 230, 230, 255);
-				// Render rect
 				SDL_RenderFillRect(renderer, &chessTile);
 			} else
 			{
 				// Set render color to Black
 				SDL_SetRenderDrawColor(renderer, 31, 48, 74, 255);
-				// Render rect
 				SDL_RenderFillRect(renderer, &chessTile);
 			}
 		}
@@ -63,7 +63,7 @@ void ChessBoard::RenderPieces()
 	}
 }
 
-void ChessBoard::getClicked(int mouseX, int mouseY)
+void ChessBoard::getClicked(int mouseX, int mouseY)  // gets current clicked piece if any was selected
 {
 	int pieceX, pieceY;
 	for (auto& piece : chessPieces)
@@ -80,16 +80,15 @@ void ChessBoard::getClicked(int mouseX, int mouseY)
 
 void ChessBoard::showCurPieceMoves()
 {
-	const int curColor = curChessPiece->GetColor();
-	if (curChessPiece != nullptr)
-		switch(curChessPiece->GetID())
-		{
+	if (curChessPiece != nullptr) {
+		const int curColor = curChessPiece->GetColor();
+		switch (curChessPiece->GetID()) {
 		case PAWN:
 			curColor == WHITE
-			? 
-			engine.generateWhitePawnMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curChessPiece->firstmove(), curColor)
-			: 
-			engine.generateBlackPawnMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curChessPiece->firstmove(), curColor);
+				?
+				engine.generateWhitePawnMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curChessPiece->firstmove(), curColor)
+				:
+				engine.generateBlackPawnMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curChessPiece->firstmove(), curColor);
 			break;
 		case ROOK:
 			engine.generateRookMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, chessPieces);
@@ -110,12 +109,12 @@ void ChessBoard::showCurPieceMoves()
 		default:
 			break;
 		}
+	}
 }
 
 void ChessBoard::MovePiece(int deltaX, int deltaY)
 {
-	if (curChessPiece != nullptr)
-		curChessPiece->Move(deltaX, deltaY);
+	if (curChessPiece != nullptr) curChessPiece->Move(deltaX, deltaY);
 }
 
 void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY)
@@ -137,11 +136,6 @@ void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY)
 		curChessPiece->ResetPos();
 		curChessPiece = nullptr;
 	}
-}
-
-void ChessBoard::Init() const
-{
-	Draw();
 }
 
 void ChessBoard::InitPieces()

@@ -1,7 +1,6 @@
 #pragma once
-#include <iostream>
+#include "pch.h"
 
-#include "SDL2/SDL.h"
 #include "ChessBoard.h"
 
 class Game

@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "Game.h"
 
 Game::Game(std::string title, int xpos, int ypos, int width, int height)
@@ -26,7 +27,7 @@ Game::Game(std::string title, int xpos, int ypos, int width, int height)
 
 void Game::Init()
 {
-	chessBoard.Init();
+	chessBoard.Draw();
 	chessBoard.InitPieces();
 }
 

@@ -1,9 +1,6 @@
 #pragma once
+#include "pch.h"
 
-#include <iostream>
-#include <string_view>
-
-#include "SDL2/SDL.h"
 #include "TextureManager.h"
 
 class ChessPiece

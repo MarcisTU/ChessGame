@@ -20,6 +20,7 @@
     <ClInclude Include="src\TextureManager.h" />
     <ClInclude Include="src\ChessBoard.h" />
     <ClInclude Include="src\GameLogic.h" />
+    <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ChessPiece.cpp" />
@@ -28,5 +29,6 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ChessBoard.cpp" />
     <ClCompile Include="src\GameLogic.cpp" />
+    <ClCompile Include="src\pch.cpp" />
   </ItemGroup>
 </Project>
