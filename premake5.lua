@@ -10,9 +10,13 @@ project "ChessGame"
     location "ChessGame"
     kind "ConsoleApp"
     language "C++"
+    cppdialect "C++17"
 
     targetdir ("bin/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}")
     objdir ("bin-int/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}/%{prj.name}")
+
+    pchheader "pch.h"
+    pchsource "%{prj.name}/src/pch.cpp"
 
     files { 
         "%{prj.name}/src/**.h",

@@ -19,6 +19,7 @@ public:
 private:
 	void createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string_view prefix);
 	int findPieceId(std::string_view& name);
+	void removeCaptured(int x, int y);
 private:
 	int chessBoardH = 0, chessBoardW = 0;
 	enum chessPieceColor { WHITE, BLACK };

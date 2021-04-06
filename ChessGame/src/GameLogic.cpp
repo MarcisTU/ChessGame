@@ -19,17 +19,28 @@ bool GameLogic::checkIfSquareHasPiece(const int curX, const int curY, const std:
 	return false;
 }
 
-void GameLogic::generateRookMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, const std::vector<ChessPiece>& chessPieces)
+void GameLogic::generateRookMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, std::vector<std::pair<int, int>>& captureMoves, const std::vector<ChessPiece>& chessPieces, int color)
 {
 	SDL_Rect r;
 	r.h = 60;
 	r.w = 60;
 	freeMoves.clear();  // clear free moves because they might be for last chess piece
-
+	captureMoves.clear();
+	
 	// Draw moves in left direction
 	for (int x = curX - 120; x >= 0; x -= 120)
 	{
-		if (checkIfSquareHasPiece(x, curY, chessPieces)) break;  // stop showing moves when reach first piece in the way
+		if (checkIfSquareHasPiece(x, curY, chessPieces)) {
+			if (checkIfCapturingEnemy(x, curY, color, chessPieces)) {
+				// ***** Get capture moves in left direction ***** //
+				SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+				r.x = x + 30;
+				r.y = curY + 30;
+				SDL_RenderFillRect(renderer, &r);
+				captureMoves.push_back({ x, curY });
+			}
+			break;  // stop showing moves when reach first piece in the way
+		}
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -42,7 +53,17 @@ void GameLogic::generateRookMoves(int curX, int curY, std::vector<std::pair<int,
 	// Draw moves in upwards direction
 	for (int y = curY - 120; y >= 0; y -= 120)
 	{
-		if (checkIfSquareHasPiece(curX, y, chessPieces)) break;  // stop showing moves when reach first piece in the way
+		if (checkIfSquareHasPiece(curX, y, chessPieces)) {
+			if (checkIfCapturingEnemy(curX, y, color, chessPieces)) {
+				// ***** Get capture moves in upwards direction ***** //
+				SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+				r.x = curX + 30;
+				r.y = y + 30;
+				SDL_RenderFillRect(renderer, &r);
+				captureMoves.push_back({ curX, y });
+			}
+			break;  // stop showing moves when reach first piece in the way
+		}
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -55,7 +76,17 @@ void GameLogic::generateRookMoves(int curX, int curY, std::vector<std::pair<int,
 	// Draw moves in right direction
 	for (int x = curX + 120; x < 960; x += 120)
 	{
-		if (checkIfSquareHasPiece(x, curY, chessPieces)) break;  // stop showing moves when reach first piece in the way
+		if (checkIfSquareHasPiece(x, curY, chessPieces)) {
+			if (checkIfCapturingEnemy(x, curY, color, chessPieces)) {
+				// ***** Get capture moves in right direction ***** //
+				SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+				r.x = x + 30;
+				r.y = curY + 30;
+				SDL_RenderFillRect(renderer, &r);
+				captureMoves.push_back({ x, curY });
+			}
+			break;  // stop showing moves when reach first piece in the way
+		}
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -68,7 +99,17 @@ void GameLogic::generateRookMoves(int curX, int curY, std::vector<std::pair<int,
 	// Draw moves in downwards direction
 	for (int y = curY + 120; y < 960; y += 120)
 	{
-		if (checkIfSquareHasPiece(curX, y, chessPieces)) break;  // stop showing moves when reach first piece in the way
+		if (checkIfSquareHasPiece(curX, y, chessPieces)) {
+			if (checkIfCapturingEnemy(curX, y, color, chessPieces)) {
+				// ***** Get capture moves in downwards direction ***** //
+				SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+				r.x = curX + 30;
+				r.y = y + 30;
+				SDL_RenderFillRect(renderer, &r);
+				captureMoves.push_back({ curX, y });
+			}
+			break;  // stop showing moves when reach first piece in the way
+		}
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -79,13 +120,14 @@ void GameLogic::generateRookMoves(int curX, int curY, std::vector<std::pair<int,
 	}
 }
 
-void GameLogic::generateKnightMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, const std::vector<ChessPiece>& chessPieces)
+void GameLogic::generateKnightMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, std::vector<std::pair<int, int>>& captureMoves, const std::vector<ChessPiece>& chessPieces, int color)
 {
 	SDL_Rect r;
 	r.h = 60;
 	r.w = 60;
 	int newX, newY;
 	freeMoves.clear();  // clear free moves because they might be for last chess piece
+	captureMoves.clear();
 
 	std::vector<std::pair<int, int>> knightMovePos = {
 		{-120, -240},  // top-left
@@ -105,8 +147,17 @@ void GameLogic::generateKnightMoves(int curX, int curY, std::vector<std::pair<in
 
 		if ((newX >= 0 && newX < 960) && (newY >= 0 && newY < 960))
 		{
-			if (checkIfSquareHasPiece(newX, newY, chessPieces))  // if square is taken by another piece then don't show free move there
+			if (checkIfSquareHasPiece(newX, newY, chessPieces)) {// if square is taken by another piece then don't show free move there
+				if (checkIfCapturingEnemy(newX, newY, color, chessPieces)) {
+					// ***** Get capture moves ***** //
+					SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+					r.x = newX + 30;
+					r.y = newY + 30;
+					SDL_RenderFillRect(renderer, &r);
+					captureMoves.push_back({ newX, newY });
+				}
 				continue;
+			}
 			SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -119,17 +170,30 @@ void GameLogic::generateKnightMoves(int curX, int curY, std::vector<std::pair<in
 	}
 }
 
-void GameLogic::generateBishopMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, const std::vector<ChessPiece>& chessPieces, bool isQueen)
+void GameLogic::generateBishopMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, std::vector<std::pair<int, int>>& captureMoves, const std::vector<ChessPiece>& chessPieces, int color, bool isQueen)
 {
 	SDL_Rect r;
 	r.h = 60;
 	r.w = 60;
-	if (!isQueen) freeMoves.clear();  // clear free moves because they might be for last chess piece
+	if (!isQueen) {
+		freeMoves.clear();  // clear free moves because they might be for last chess piece
+		captureMoves.clear();
+	}
 
 	// Draw moves in top-left direction
 	for (int x = curX - 120, y = curY - 120; x >= 0 && y >= 0; x -= 120, y -= 120)
 	{
-		if (checkIfSquareHasPiece(x, y, chessPieces)) break;  // stop showing moves when reach first piece in the way
+		if (checkIfSquareHasPiece(x, y, chessPieces)) {
+			if (checkIfCapturingEnemy(x, y, color, chessPieces)) {
+				// ***** Get capture moves ***** //
+				SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+				r.x = x + 30;
+				r.y = y + 30;
+				SDL_RenderFillRect(renderer, &r);
+				captureMoves.push_back({ x, y });
+			}
+			break;  // stop showing moves when reach first piece in the way
+		}
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -142,7 +206,17 @@ void GameLogic::generateBishopMoves(int curX, int curY, std::vector<std::pair<in
 	// Draw moves in top-right direction
 	for (int x = curX + 120, y = curY - 120; y >= 0 && x < 960; x += 120, y -= 120)
 	{
-		if (checkIfSquareHasPiece(x, y, chessPieces)) break;  // stop showing moves when reach first piece in the way
+		if (checkIfSquareHasPiece(x, y, chessPieces)) {
+			if (checkIfCapturingEnemy(x, y, color, chessPieces)) {
+				// ***** Get capture moves ***** //
+				SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+				r.x = x + 30;
+				r.y = y + 30;
+				SDL_RenderFillRect(renderer, &r);
+				captureMoves.push_back({ x, y });
+			}
+			break;  // stop showing moves when reach first piece in the way
+		}
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -155,7 +229,17 @@ void GameLogic::generateBishopMoves(int curX, int curY, std::vector<std::pair<in
 	// Draw moves in bottom-right direction
 	for (int x = curX + 120, y = curY + 120; x < 960 && y < 960; x += 120, y += 120)
 	{
-		if (checkIfSquareHasPiece(x, y, chessPieces)) break;  // stop showing moves when reach first piece in the way
+		if (checkIfSquareHasPiece(x, y, chessPieces)) {
+			if (checkIfCapturingEnemy(x, y, color, chessPieces)) {
+				// ***** Get capture moves ***** //
+				SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+				r.x = x + 30;
+				r.y = y + 30;
+				SDL_RenderFillRect(renderer, &r);
+				captureMoves.push_back({ x, y });
+			}
+			break;  // stop showing moves when reach first piece in the way
+		}
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -168,7 +252,17 @@ void GameLogic::generateBishopMoves(int curX, int curY, std::vector<std::pair<in
 	// Draw moves in bottom-left direction
 	for (int x = curX - 120, y = curY + 120; x >= 0 && y < 960; x -= 120, y += 120)
 	{
-		if (checkIfSquareHasPiece(x, y, chessPieces)) break;  // stop showing moves when reach first piece in the way
+		if (checkIfSquareHasPiece(x, y, chessPieces)) {
+			if (checkIfCapturingEnemy(x, y, color, chessPieces)) {
+				// ***** Get capture moves ***** //
+				SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+				r.x = x + 30;
+				r.y = y + 30;
+				SDL_RenderFillRect(renderer, &r);
+				captureMoves.push_back({ x, y });
+			}
+			break;  // stop showing moves when reach first piece in the way
+		}
 		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -179,13 +273,15 @@ void GameLogic::generateBishopMoves(int curX, int curY, std::vector<std::pair<in
 	}
 }
 
-void GameLogic::generateKingMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, const std::vector<ChessPiece>& chessPieces)
+void GameLogic::generateKingMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, std::vector<std::pair<int, int>>& captureMoves, const std::vector<ChessPiece>& chessPieces, int color)
 {
 	SDL_Rect r;
 	r.h = 60;
 	r.w = 60;
 	int newX, newY;
 	freeMoves.clear();  // clear free moves because they might be for last chess piece
+	captureMoves.clear();
+	
 	std::vector<std::pair<int, int>> kingMovePos = {
 		{-120, -120},  // top-left
 		{0, -120},     // top
@@ -204,7 +300,17 @@ void GameLogic::generateKingMoves(int curX, int curY, std::vector<std::pair<int,
 
 		if ((newX >= 0 && newX < 960) && (newY >= 0 && newY < 960))
 		{
-			if (checkIfSquareHasPiece(newX, newY, chessPieces)) continue;
+			if (checkIfSquareHasPiece(newX, newY, chessPieces)) {
+				if (checkIfCapturingEnemy(newX, newY, color, chessPieces)) {
+					// ***** Get capture moves ***** //
+					SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+					r.x = newX + 30;
+					r.y = newY + 30;
+					SDL_RenderFillRect(renderer, &r);
+					captureMoves.push_back({ newX, newY });
+				}
+				continue;
+			}
 			SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 			SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 
@@ -223,7 +329,7 @@ void GameLogic::generateBlackPawnMoves(int curX, int curY, std::vector<std::pair
 	r.h = 60;
 	r.w = 60;
 
-	// ***** Get available moves ***** //
+	// ***** Get free moves ***** //
 	SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	freeMoves.clear();  // clear free moves because they might be for last chess piece
@@ -267,7 +373,7 @@ void GameLogic::generateBlackPawnMoves(int curX, int curY, std::vector<std::pair
 	}
 }
 
-void GameLogic::generateWhitePawnMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, std::vector<std::pair<int, int>>& captureMoves, const std::vector<ChessPiece>& chessPiece, bool isFirstMove, int color)
+void GameLogic::generateWhitePawnMoves(int curX, int curY, std::vector<std::pair<int, int>>& freeMoves, std::vector<std::pair<int, int>>& captureMoves, const std::vector<ChessPiece>& chessPieces, bool isFirstMove, int color)
 {
 	SDL_Rect r;
 	r.h = 60;
@@ -279,13 +385,13 @@ void GameLogic::generateWhitePawnMoves(int curX, int curY, std::vector<std::pair
 	freeMoves.clear();  // clear free moves because they might be for last chess piece
 	captureMoves.clear();
 
-	if (!checkIfSquareHasPiece(curX, curY + 120, chessPiece)) {
+	if (!checkIfSquareHasPiece(curX, curY + 120, chessPieces)) {
 		r.x = curX + 30;
 		r.y = curY + 150;
 		SDL_RenderFillRect(renderer, &r);
 		freeMoves.push_back({ curX, curY + 120 });
 
-		if (!checkIfSquareHasPiece(curX, curY + 240, chessPiece) && isFirstMove) {
+		if (!checkIfSquareHasPiece(curX, curY + 240, chessPieces) && isFirstMove) {
 			r.x = curX + 30;
 			r.y = curY + 270;
 			SDL_RenderFillRect(renderer, &r);
@@ -299,8 +405,8 @@ void GameLogic::generateWhitePawnMoves(int curX, int curY, std::vector<std::pair
 
 	// - Check left diagonal capture move
 	if ((curX > 0 && curY < 840)
-		&& checkIfSquareHasPiece(curX - 120, curY + 120, chessPiece)
-		&& checkIfCapturingEnemy(curX - 120, curY + 120, color, chessPiece))
+		&& checkIfSquareHasPiece(curX - 120, curY + 120, chessPieces)
+		&& checkIfCapturingEnemy(curX - 120, curY + 120, color, chessPieces))
 	{
 		r.x = curX - 90;
 		SDL_RenderFillRect(renderer, &r);
@@ -308,8 +414,8 @@ void GameLogic::generateWhitePawnMoves(int curX, int curY, std::vector<std::pair
 	}
 	// - Check right diagonal capture move
 	if ((curX < 840 && curY < 840)
-		&& checkIfSquareHasPiece(curX + 120, curY + 120, chessPiece)
-		&& checkIfCapturingEnemy(curX + 120, curY + 120, color, chessPiece))
+		&& checkIfSquareHasPiece(curX + 120, curY + 120, chessPieces)
+		&& checkIfCapturingEnemy(curX + 120, curY + 120, color, chessPieces))
 	{
 		r.x = curX + 150;
 		SDL_RenderFillRect(renderer, &r);

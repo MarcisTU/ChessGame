@@ -91,20 +91,20 @@ void ChessBoard::showCurPieceMoves()
 				engine.generateBlackPawnMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curChessPiece->firstmove(), curColor);
 			break;
 		case ROOK:
-			engine.generateRookMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, chessPieces);
+			engine.generateRookMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curColor);
 			break;
 		case KNIGHT:
-			engine.generateKnightMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, chessPieces);
+			engine.generateKnightMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curColor);
 			break;
 		case BISHOP:
-			engine.generateBishopMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, chessPieces);
+			engine.generateBishopMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curColor);
 			break;
 		case KING:
-			engine.generateKingMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, chessPieces);
+			engine.generateKingMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curColor);
 			break;
 		case QUEEN:
-			engine.generateRookMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, chessPieces);
-			engine.generateBishopMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, chessPieces, true);
+			engine.generateRookMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curColor);
+			engine.generateBishopMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curColor, true);
 			break;
 		default:
 			break;
@@ -121,6 +121,7 @@ void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY)
 {
 	if (curChessPiece != nullptr)
 	{
+		// *** Handle mouse button up on free move *** //
 		for (auto& target : freeMoves)
 		{
 			if ((mouseX >= target.first && mouseX < (target.first + 120)) 
@@ -128,13 +129,50 @@ void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY)
 			{
 				curChessPiece->setPos(target.first, target.second);
 				// Mark chess piece as moved
-				curChessPiece->setFirstMove(false);
+				if (curChessPiece->firstmove()) curChessPiece->setFirstMove(false);
+				curChessPiece = nullptr;
+				return;
+			}
+		}
+		// *** Handle mouse button up on capture move *** //
+		for (auto& target : captureMoves)
+		{
+			if ((mouseX >= target.first && mouseX < (target.first + 120))
+				&& (mouseY >= target.second && mouseY < (target.second + 120)))
+			{
+				int curX = curChessPiece->GetX();
+				int curY = curChessPiece->GetY();
+				
+				// Remove to be captured chess piece
+				removeCaptured(target.first, target.second);  // TODO draw captured piece for score
+
+				getClicked(curX, curY);  // Removing element from vector may have shifted it and our pointer is not pointing to right element, so we get curChessPiece again
+				
+				// Then move capturing chess piece to new position
+				curChessPiece->setPos(target.first, target.second);
+				
+				// Mark chess piece as moved
+				if (curChessPiece->firstmove()) curChessPiece->setFirstMove(false);
+
+				// Set current piece as nullptr
 				curChessPiece = nullptr;
 				return;
 			}
 		}
 		curChessPiece->ResetPos();
 		curChessPiece = nullptr;
+	}
+}
+
+void ChessBoard::removeCaptured(int x, int y)
+{
+	int count = 0;
+	for (auto it = chessPieces.begin(); it != chessPieces.end(); ++it, count++) {
+		if (it->GetX() == x && it->GetY() == y)
+		{
+			chessPieces.erase(it);
+			break;  // piece is deleted so no need to iterate further
+		}
 	}
 }
 
