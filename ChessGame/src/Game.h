@@ -22,8 +22,8 @@ public:
 
 	bool running() { return isRunning; }
 private:
-	int winHeight, winWidth;
-	bool isRunning, leftMouseBtnDown;
+	int winHeight, winWidth, curPieceColor;
+	bool isRunning, leftMouseBtnDown, isWhiteMove = true;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
 	SDL_Point mousePos, lastMousePos;

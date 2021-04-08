@@ -12,8 +12,8 @@ public:
 	void InitPieces();
 	void Draw() const;
 	void RenderPieces();
-	void UpdateMovedPos(int mouseX, int mouseY);
-	void getClicked(int mouseX, int mouseY);
+	void UpdateMovedPos(int mouseX, int mouseY, bool &isWhiteMove);
+	void getClicked(int mouseX, int mouseY, int &curPieceColor);
 	void MovePiece(int deltaX, int deltaY);
 	void showCurPieceMoves();
 private:

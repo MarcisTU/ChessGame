@@ -54,14 +54,16 @@ void Game::handleEvents()
 		if (event.button.button == SDL_BUTTON_LEFT)
 		{
 			leftMouseBtnDown = false;
-			chessBoard.UpdateMovedPos(mousePos.x, mousePos.y);
+			// Only try to update moved piece position if actual piece was selected
+			if (curPieceColor == 0 && isWhiteMove || curPieceColor == 1 && !isWhiteMove)
+				chessBoard.UpdateMovedPos(mousePos.x, mousePos.y, isWhiteMove);
 		}
 		break;
 	case SDL_MOUSEBUTTONDOWN:
 		if (event.button.button == SDL_BUTTON_LEFT)
 		{
 			leftMouseBtnDown = true;
-			chessBoard.getClicked(mousePos.x, mousePos.y);
+			chessBoard.getClicked(mousePos.x, mousePos.y, curPieceColor);
 		}
 		break;
 	default:
@@ -71,9 +73,10 @@ void Game::handleEvents()
 
 void Game::update()
 {
-	if (leftMouseBtnDown)
+	// Check if it's white or black move and if according piece color is selected
+	if (leftMouseBtnDown && (curPieceColor == 0 && isWhiteMove || curPieceColor == 1 && !isWhiteMove))
 	{
-		// Create draggable object effect while mouse btn is down on chess piece
+		// Create draggable object effect while mouse button is pressed on chess piece and moved around
 		chessBoard.MovePiece((mousePos.x - lastMousePos.x), (mousePos.y - lastMousePos.y));
 	}
 	lastMousePos = mousePos;
@@ -85,7 +88,7 @@ void Game::render()
 
 	chessBoard.Draw();
 
-	if (leftMouseBtnDown)  // render chess piece move placeholders if any piece is selected
+	if (leftMouseBtnDown && (curPieceColor == 0 && isWhiteMove || curPieceColor == 1 && !isWhiteMove)) // render chess piece move placeholders if any piece is selected
 		chessBoard.showCurPieceMoves();
 	
 	chessBoard.RenderPieces();
