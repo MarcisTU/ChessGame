@@ -6,7 +6,7 @@
 class Game
 {
 public:
-	Game(std::string title, int xpos, int ypos, int width, int height);
+	Game(const std::string& title, int xpos, int ypos, int width, int height);
 	// Delete default generated copy constructor and assignment operator because we don't want to copy Game object (Rule of Five). If we delete one default then we got to delete all of them
 	Game(const Game&) = delete;				 // Copy constructor
 	Game& operator=(Game&) = delete;		 // Copy assignment operator
@@ -20,9 +20,9 @@ public:
 	void update();
 	void render();
 
-	bool running() { return isRunning; }
+	bool running() const { return isRunning; }
 private:
-	int winHeight, winWidth, curPieceColor;
+	int winHeight, winWidth, curPieceColor = 0;
 	bool isRunning, leftMouseBtnDown, isWhiteMove = true;
 	SDL_Window* window;
 	SDL_Renderer* renderer;

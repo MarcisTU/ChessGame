@@ -14,7 +14,7 @@ public:
 	void RenderPieces();
 	void UpdateMovedPos(int mouseX, int mouseY, bool &isWhiteMove);
 	void getClicked(int mouseX, int mouseY, int &curPieceColor);
-	void MovePiece(int deltaX, int deltaY);
+	void MovePiece(int deltaX, int deltaY) const;
 	void showCurPieceMoves();
 private:
 	void createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string_view prefix);
@@ -26,10 +26,11 @@ private:
 	enum chessPieceID { ROOK, KNIGHT, BISHOP, KING, QUEEN, PAWN };
 	//const char letters[8] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h' };
 	std::vector<ChessPiece> chessPieces;
+	std::vector<ChessPiece> capturedPieces;
 	std::vector<std::pair<int, int>> freeMoves;
 	std::vector<std::pair<int, int>> captureMoves;
-
+	
+	SDL_Renderer* renderer;
 	ChessPiece* curChessPiece;
 	GameLogic engine;
-	SDL_Renderer* renderer;
 };

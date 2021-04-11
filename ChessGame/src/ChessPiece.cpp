@@ -2,7 +2,8 @@
 #include "ChessPiece.h"
 
 ChessPiece::ChessPiece(const std::string& texture, int newX, int newY, SDL_Renderer* ren, int pieceId, int pieceColor)
-	: x(newX), y(newY), renderer(ren), id(pieceId), color(pieceColor) {
+	: x(newX), y(newY), id(pieceId), color(pieceColor), renderer(ren), srcRect({0, 0, 0, 0}), destRect({0, 0, 0, 0})
+{
 	objTexture = TextureManager::LoadTexture(texture.c_str(), ren);
 
 	// choose what portion of source image to take
@@ -34,14 +35,20 @@ void ChessPiece::ResetPos()
 	destRect.y = resetY;
 }
 
-void ChessPiece::setPos(const int newX, const int newY)
+void ChessPiece::setPos(const int newX, const int newY, int offsetX, int offsetY)
 {
 	x = newX;
 	y = newY;
-	resetX = x + 25;
-	resetY = y + 11;
-	destRect.x = x + 25;
-	destRect.y = y + 11;
+	resetX = x + offsetX;
+	resetY = y + offsetY;
+	destRect.x = x + offsetX;
+	destRect.y = y + offsetY;
+}
+
+void ChessPiece::setDimensions(int width, int height)
+{
+	destRect.w = width;
+	destRect.h = height;
 }
 
 void ChessPiece::Render() const

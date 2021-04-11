@@ -70,6 +70,28 @@ void ChessBoard::RenderPieces()
 	{
 		curChessPiece->Render();
 	}
+
+	// Render each player's captured pieces above or below the board
+	if (!capturedPieces.empty()) {
+		int whiteX = 0, blackX = 0;
+		for (auto& it : capturedPieces)
+		{
+			// check for piece color
+			if (it.GetColor() == WHITE)
+			{
+				it.setPos(whiteX, chessBoardH, 3, -37);
+				it.setDimensions(24, 34);
+				it.Render();
+				whiteX += 40;
+			} else
+			{
+				it.setPos(blackX, 0, 3, 3);
+				it.setDimensions(24, 34);
+				it.Render();
+				blackX += 40;
+			}
+		}
+	}
 }
 
 void ChessBoard::getClicked(int mouseX, int mouseY, int &curPieceColor)  // gets current clicked piece if any was selected
@@ -122,7 +144,7 @@ void ChessBoard::showCurPieceMoves()
 	}
 }
 
-void ChessBoard::MovePiece(int deltaX, int deltaY)
+void ChessBoard::MovePiece(int deltaX, int deltaY) const
 {
 	if (curChessPiece != nullptr) curChessPiece->Move(deltaX, deltaY);
 }
@@ -184,6 +206,7 @@ void ChessBoard::removeCaptured(int x, int y)
 	for (auto it = chessPieces.begin(); it != chessPieces.end(); ++it) {
 		if (it->GetX() == x && it->GetY() == y)
 		{
+			capturedPieces.emplace_back((*it));
 			chessPieces.erase(it);
 			break;  // piece is deleted so no need to iterate further
 		}
@@ -203,6 +226,7 @@ int ChessBoard::findPieceId(std::string_view& name)
 	if (name == "bishop") return BISHOP;
 	if (name == "king") return KING;
 	if (name == "queen") return QUEEN;
+	return PAWN;
 }
 
 void ChessBoard::createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string_view prefix)

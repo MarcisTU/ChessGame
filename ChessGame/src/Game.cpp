@@ -1,14 +1,14 @@
 #include "pch.h"
 #include "Game.h"
 
-Game::Game(std::string title, int xpos, int ypos, int width, int height)
-	: winHeight(height), winWidth(width)
+Game::Game(const std::string& title, const int xPos, const int yPos, int width, int height)
+	: winHeight(height), winWidth(width), leftMouseBtnDown(false), renderer(nullptr), mousePos({ 0, 0 }), lastMousePos({0, 0})
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING) == 0)
 	{
 		std::cout << "Subsystems initialized..." << std::endl;
 
-		window = SDL_CreateWindow(title.c_str(), xpos, ypos, width, height, 0);
+		window = SDL_CreateWindow(title.c_str(), xPos, yPos, width, height, 0);
 		if (window) std::cout << "Window created!" << std::endl;
 
 		renderer = SDL_CreateRenderer(window, -1, 0);
@@ -21,7 +21,6 @@ Game::Game(std::string title, int xpos, int ypos, int width, int height)
 		isRunning = true; 
 	}
 	else isRunning = false;
-	leftMouseBtnDown = false;
 	chessBoard = ChessBoard(winHeight, winWidth, renderer);
 }
 

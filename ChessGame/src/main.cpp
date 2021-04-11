@@ -9,7 +9,7 @@
 // TODO & El pasan move for pawns and pawn's being able to transform once reached other side of board
 // TODO ? Instead of "for loops" use algorithms library if possible (optimize)
 
-int main()
+int main(int argc, char* args[])
 {
 	Game game("Chess Game", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 960, 1040);
 
