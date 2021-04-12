@@ -63,6 +63,7 @@ void Game::handleEvents()
 		{
 			leftMouseBtnDown = true;
 			chessBoard.getClicked(mousePos.x, mousePos.y, curPieceColor);
+			chessBoard.getCurPieceMoves();
 		}
 		break;
 	default:
@@ -88,7 +89,7 @@ void Game::render()
 	chessBoard.Draw();
 
 	if (leftMouseBtnDown && (curPieceColor == 0 && isWhiteMove || curPieceColor == 1 && !isWhiteMove)) // render chess piece move placeholders if any piece is selected
-		chessBoard.showCurPieceMoves();
+		chessBoard.drawAvailableMoves();
 	
 	chessBoard.RenderPieces();
 	

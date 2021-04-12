@@ -2,7 +2,7 @@
 #include "ChessBoard.h"
 
 ChessBoard::ChessBoard(int winHeight, int winWidth, SDL_Renderer* ren)
-	: chessBoardH(winHeight), chessBoardW(winWidth), renderer(ren), curChessPiece(nullptr), engine(ren)
+	: chessBoardH(winHeight), chessBoardW(winWidth), renderer(ren), curChessPiece(nullptr)
 {}
 
 void ChessBoard::Draw() const
@@ -110,21 +110,50 @@ void ChessBoard::getClicked(int mouseX, int mouseY, int &curPieceColor)  // gets
 	}
 }
 
-void ChessBoard::showCurPieceMoves()
+void ChessBoard::drawAvailableMoves() const
+{
+	if (curChessPiece != nullptr) {
+		SDL_Rect r;
+		r.h = 60;
+		r.w = 60;
+		SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+		SDL_SetRenderDrawColor(renderer, 79, 55, 158, 90);
+		for (const auto& free : freeMoves)
+		{
+			r.x = free.first + 30;
+			r.y = free.second + 30;
+			SDL_RenderFillRect(renderer, &r);
+		}
+		SDL_SetRenderDrawColor(renderer, 201, 38, 20, 90);
+		// Draw capture moves
+		for (const auto& capt : captureMoves)
+		{
+			r.x = capt.first + 30;
+			r.y = capt.second + 30;
+			SDL_RenderFillRect(renderer, &r);
+		}
+	}
+}
+
+void ChessBoard::getCurPieceMoves()
 {
 	if (curChessPiece != nullptr) {
 		const int selectedPieceColor = curChessPiece->GetColor();
+
 		switch (curChessPiece->GetID()) {
-		case PAWN:
+		case PAWN: {
+			// Get and draw moves
 			selectedPieceColor == WHITE
 				?
 				engine.generateWhitePawnMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curChessPiece->firstMove(), selectedPieceColor)
 				:
 				engine.generateBlackPawnMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curChessPiece->firstMove(), selectedPieceColor);
 			break;
-		case ROOK:
+		}
+		case ROOK: {
 			engine.generateRookMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
 			break;
+		}
 		case KNIGHT:
 			engine.generateKnightMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
 			break;
@@ -149,6 +178,34 @@ void ChessBoard::MovePiece(int deltaX, int deltaY) const
 	if (curChessPiece != nullptr) curChessPiece->Move(deltaX, deltaY);
 }
 
+bool ChessBoard::isKingChecked()
+{
+	std::pair<int, int> kingPos {0, 0};
+	
+	if (curChessPiece->GetColor() == WHITE)
+	{
+		// First get black king's pos
+		for (const auto& piece : chessPieces)
+			if (piece.GetColor() == BLACK && piece.GetID() == KING)
+				kingPos = {piece.GetX(), piece.GetY()};
+		// Then check if current piece can capture king on the next move
+		getCurPieceMoves();
+		for (auto& captPos : captureMoves)
+			if (kingPos == captPos) return true;
+	} else
+	{
+		// First get white king's pos
+		for (const auto& piece : chessPieces)
+			if (piece.GetColor() == WHITE && piece.GetID() == KING)
+				kingPos = { piece.GetX(), piece.GetY() };
+		// Then check if current piece can capture king on the next move
+		getCurPieceMoves();
+		for (auto& captPos : captureMoves)
+			if (kingPos == captPos) return true;
+	}
+	return false;
+}
+
 void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY, bool& isWhiteMove)
 {
 	if (curChessPiece != nullptr)
@@ -161,9 +218,18 @@ void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY, bool& isWhit
 			{
 				curChessPiece->setPos(target.first, target.second);
 				isWhiteMove = !isWhiteMove;
-				std::cout << "Changing player: free move" << std::endl;
+
 				// Mark chess piece as moved
 				if (curChessPiece->firstMove()) curChessPiece->setFirstMove(false);
+
+				kingCheck = isKingChecked();
+				
+				// TODO temporary
+				std::string_view color;
+				color = curChessPiece->GetColor() == WHITE ? "Black" : "White";
+				kingCheck ? std::cout << color << " king is at check." << std::endl : std::cout << "";
+				//
+				
 				curChessPiece = nullptr;
 				return;
 			}
