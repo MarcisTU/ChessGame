@@ -16,12 +16,12 @@ public:
 	void getClicked(int mouseX, int mouseY, int &curPieceColor);
 	void MovePiece(int deltaX, int deltaY) const;
 	void drawAvailableMoves() const;
-	void getCurPieceMoves();
+	void getCurPieceMoves(const ChessPiece* curChessPiece);
 private:
 	void createPieces(std::vector<ChessPiece>& pieces, int startX, int startY, std::string_view prefix);
 	int findPieceId(std::string_view& name);
-	void removeCaptured(int x, int y);
-	bool isKingChecked();
+	ChessPiece removeCaptured(int x, int y);
+	bool isKingChecked(int color);
 private:
 	bool kingCheck = false;
 	int chessBoardH = 0, chessBoardW = 0;

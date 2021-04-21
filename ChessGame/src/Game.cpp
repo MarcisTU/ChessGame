@@ -63,7 +63,6 @@ void Game::handleEvents()
 		{
 			leftMouseBtnDown = true;
 			chessBoard.getClicked(mousePos.x, mousePos.y, curPieceColor);
-			chessBoard.getCurPieceMoves();
 		}
 		break;
 	default:

@@ -3,7 +3,6 @@
 
 // MAJOR TODOS & - must do  // ? - optional but would be good
 //
-// TODO & Implement opponent's king capture "check" and block any moves that would leave king vulnerable
 // TODO & Check if player has possible free moves left for king or other pieces to block opponents attacker/ or capture that piece. If not then opponent player wins. GAME OVER state also show only those free moves for King which won't put him in captured state.!
 // TODO & Implement clashing on queen side and also king side
 // TODO & El pasan move for pawns and pawn's being able to transform once reached other side of board

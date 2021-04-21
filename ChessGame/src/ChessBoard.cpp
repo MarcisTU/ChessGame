@@ -105,6 +105,7 @@ void ChessBoard::getClicked(int mouseX, int mouseY, int &curPieceColor)  // gets
 			&& (mouseY >= pieceY && mouseY < (pieceY + 120)))
 		{
 			curChessPiece = &piece;
+			getCurPieceMoves(curChessPiece);
 			curPieceColor = curChessPiece->GetColor();
 		}
 	}
@@ -135,37 +136,37 @@ void ChessBoard::drawAvailableMoves() const
 	}
 }
 
-void ChessBoard::getCurPieceMoves()
+void ChessBoard::getCurPieceMoves(const ChessPiece* curPiece)
 {
-	if (curChessPiece != nullptr) {
-		const int selectedPieceColor = curChessPiece->GetColor();
+	if (curPiece != nullptr) {
+		const int selectedPieceColor = curPiece->GetColor();
 
-		switch (curChessPiece->GetID()) {
+		switch (curPiece->GetID()) {
 		case PAWN: {
 			// Get and draw moves
 			selectedPieceColor == WHITE
 				?
-				engine.generateWhitePawnMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curChessPiece->firstMove(), selectedPieceColor)
+				engine.generateWhitePawnMoves(curPiece->GetX(), curPiece->GetY(), freeMoves, captureMoves, chessPieces, curPiece->firstMove(), selectedPieceColor)
 				:
-				engine.generateBlackPawnMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, curChessPiece->firstMove(), selectedPieceColor);
+				engine.generateBlackPawnMoves(curPiece->GetX(), curPiece->GetY(), freeMoves, captureMoves, chessPieces, curPiece->firstMove(), selectedPieceColor);
 			break;
 		}
 		case ROOK: {
-			engine.generateRookMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
+			engine.generateRookMoves(curPiece->GetX(), curPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
 			break;
 		}
 		case KNIGHT:
-			engine.generateKnightMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
+			engine.generateKnightMoves(curPiece->GetX(), curPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
 			break;
 		case BISHOP:
-			engine.generateBishopMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
+			engine.generateBishopMoves(curPiece->GetX(), curPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
 			break;
 		case KING:
-			engine.generateKingMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
+			engine.generateKingMoves(curPiece->GetX(), curPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
 			break;
 		case QUEEN:
-			engine.generateRookMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
-			engine.generateBishopMoves(curChessPiece->GetX(), curChessPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor, true);
+			engine.generateRookMoves(curPiece->GetX(), curPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor);
+			engine.generateBishopMoves(curPiece->GetX(), curPiece->GetY(), freeMoves, captureMoves, chessPieces, selectedPieceColor, true);
 			break;
 		default:
 			break;
@@ -178,30 +179,46 @@ void ChessBoard::MovePiece(int deltaX, int deltaY) const
 	if (curChessPiece != nullptr) curChessPiece->Move(deltaX, deltaY);
 }
 
-bool ChessBoard::isKingChecked()
+bool ChessBoard::isKingChecked(const int color)
 {
 	std::pair<int, int> kingPos {0, 0};
 	
-	if (curChessPiece->GetColor() == WHITE)
+	if (color == WHITE)
 	{
-		// First get black king's pos
-		for (const auto& piece : chessPieces)
-			if (piece.GetColor() == BLACK && piece.GetID() == KING)
-				kingPos = {piece.GetX(), piece.GetY()};
-		// Then check if current piece can capture king on the next move
-		getCurPieceMoves();
-		for (auto& captPos : captureMoves)
-			if (kingPos == captPos) return true;
-	} else
-	{
-		// First get white king's pos
+		// Find white king position
 		for (const auto& piece : chessPieces)
 			if (piece.GetColor() == WHITE && piece.GetID() == KING)
 				kingPos = { piece.GetX(), piece.GetY() };
-		// Then check if current piece can capture king on the next move
-		getCurPieceMoves();
-		for (auto& captPos : captureMoves)
-			if (kingPos == captPos) return true;
+
+		for (const auto& piece : chessPieces) 
+		{
+			if (piece.GetColor() == BLACK)
+			{
+				// Get piece capture moves
+				getCurPieceMoves(&piece);
+
+				// Check if king's pos is in capture moves, if it is then king is at check
+				if (std::find(captureMoves.begin(), captureMoves.end(), kingPos) != captureMoves.end()) return true;
+			}
+		}
+	} else
+	{
+		// Find black king position
+		for (const auto& piece : chessPieces)
+			if (piece.GetColor() == BLACK && piece.GetID() == KING)
+				kingPos = { piece.GetX(), piece.GetY() };
+
+		for (const auto& piece : chessPieces)
+		{
+			if (piece.GetColor() == WHITE)
+			{
+				// Get piece capture moves
+				getCurPieceMoves(&piece);
+
+				// Check if king's pos is in capture moves, if it is then king is at check
+				if (std::find(captureMoves.begin(), captureMoves.end(), kingPos) != captureMoves.end()) return true;
+			}
+		}
 	}
 	return false;
 }
@@ -210,53 +227,62 @@ void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY, bool& isWhit
 {
 	if (curChessPiece != nullptr)
 	{
+		ChessPiece removed;
+		std::vector<std::pair<int, int>> free = freeMoves;
+		std::vector<std::pair<int, int>> capture = captureMoves;
+		const std::pair<int, int> curPos = { curChessPiece->GetX(), curChessPiece->GetY() };
+		
 		// *** Handle mouse button up on free move *** //
-		for (auto& target : freeMoves)
+		for (auto& target : free)
 		{
 			if ((mouseX >= target.first && mouseX < (target.first + 120)) 
 				&& (mouseY >= target.second && mouseY < (target.second + 120)))
 			{
 				curChessPiece->setPos(target.first, target.second);
-				isWhiteMove = !isWhiteMove;
+				kingCheck = isKingChecked(curChessPiece->GetColor());
 
-				// Mark chess piece as moved
-				if (curChessPiece->firstMove()) curChessPiece->setFirstMove(false);
-
-				kingCheck = isKingChecked();
-				
-				// TODO temporary
-				std::string_view color;
-				color = curChessPiece->GetColor() == WHITE ? "Black" : "White";
-				kingCheck ? std::cout << color << " king is at check." << std::endl : std::cout << "";
-				//
+				if (kingCheck)
+				{
+					std::cout << "Your king is at check." << std::endl;
+					curChessPiece->setPos(curPos.first, curPos.second);
+				} else
+				{
+					isWhiteMove = !isWhiteMove;
+					// Mark chess piece as moved
+					if (curChessPiece->firstMove()) curChessPiece->setFirstMove(false);
+				}
 				
 				curChessPiece = nullptr;
 				return;
 			}
 		}
 		// *** Handle mouse button up on capture move *** //
-		for (auto& target : captureMoves)
+		for (auto& target : capture)
 		{
 			if ((mouseX >= target.first && mouseX < (target.first + 120))
 				&& (mouseY >= target.second && mouseY < (target.second + 120)))
 			{
-				int temp;
-				int curX = curChessPiece->GetX();
-				int curY = curChessPiece->GetY();
-				
-				// Remove to be captured chess piece
-				removeCaptured(target.first, target.second);  // TODO draw captured piece for score
-
-				getClicked(curX, curY, temp); //Removing element from vector have shifted it and our pointer is not pointing to right element, so we get curChessPiece again
-				
-				// Then move capturing chess piece to new position
+				// Remove target before checking king
+				removed = removeCaptured(target.first, target.second);
+				// Move capturing chess piece to new position
 				curChessPiece->setPos(target.first, target.second);
-				// Switch player
-				isWhiteMove = !isWhiteMove;
-				std::cout << "Changing player: capture move" << std::endl;
-				// Mark chess piece as moved
-				if (curChessPiece->firstMove()) curChessPiece->setFirstMove(false);
+				// Check if our king will be at check
+				kingCheck = isKingChecked(curChessPiece->GetColor());
 
+				if (kingCheck)
+				{
+					std::cout << "Your king is at check." << std::endl;
+					curChessPiece->setPos(curPos.first, curPos.second);  // Reset current piece move
+					chessPieces.emplace_back(removed);
+				}
+				else
+				{
+					// Switch player
+					isWhiteMove = !isWhiteMove;
+					// Mark chess piece as moved
+					if (curChessPiece->firstMove()) curChessPiece->setFirstMove(false);
+				}
+				
 				// Set current piece as nullptr to not point to the same piece next time
 				curChessPiece = nullptr;
 				return;
@@ -267,16 +293,28 @@ void ChessBoard::UpdateMovedPos(const int mouseX, const int mouseY, bool& isWhit
 	}
 }
 
-void ChessBoard::removeCaptured(int x, int y)
+ChessPiece ChessBoard::removeCaptured(int x, int y)
 {
+	ChessPiece tmp;
+	// Save current chess piece data
+	std::pair<int, int> tempPos{curChessPiece->GetX(), curChessPiece->GetY()};
+	
 	for (auto it = chessPieces.begin(); it != chessPieces.end(); ++it) {
 		if (it->GetX() == x && it->GetY() == y)
 		{
 			capturedPieces.emplace_back((*it));
+			tmp = (*it);
 			chessPieces.erase(it);
-			break;  // piece is deleted so no need to iterate further
+			break;
 		}
 	}
+	// Fix the curChessPiece pointer to point to right piece after removing
+	for (auto& piece : chessPieces)
+	{
+		if (piece.GetX() == tempPos.first && piece.GetY() == tempPos.second)
+			curChessPiece = &piece;
+	}
+	return tmp;
 }
 
 void ChessBoard::InitPieces()
